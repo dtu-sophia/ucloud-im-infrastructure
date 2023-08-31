@@ -1,0 +1,10 @@
+---
+
+env: "prod"
+
+im_ext_repo: "https://user:token@internal-repo.domain/integration-module-extensions.git"
+im_ext_branch: "{{env}}"
+
+ucloud_tag: "v2023.2.8"
+
+...

@@ -1,0 +1,24 @@
+---
+
+- name: Add user
+  user:
+    name: "{{user}}"
+    comment: Unprivileged User
+    create_home: true
+    shell: "/bin/sh"
+
+- name: Enable linger
+  command: "loginctl enable-linger {{user}}"
+
+- name: Update .profile for systemd user scope requirements
+  lineinfile:
+    path: "/home/{{user}}/.profile"
+    create: true
+    mode: "0755"
+    owner: "{{user}}"
+    group: "{{user}}"
+    line: |
+      export XDG_RUNTIME_DIR="/run/user/$UID"
+      export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+
+...

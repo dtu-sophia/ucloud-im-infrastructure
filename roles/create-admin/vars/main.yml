@@ -1,0 +1,9 @@
+---
+
+admins:
+  - username: admin1
+    sshkey: SSH-PUBKEY
+  - username: admin2
+    sshkey: SSH-PUBKEY
+
+...

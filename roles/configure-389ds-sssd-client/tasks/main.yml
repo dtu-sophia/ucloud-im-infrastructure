@@ -1,0 +1,55 @@
+---
+
+- name: Enable 389-ds module
+  command: dnf module enable -y 389-ds
+
+- name: Install prerequisites for user management and storage
+  dnf:
+    name:
+      - python3-lib389
+      - 389-ds-base
+      - sssd
+      - oddjob
+      - oddjob-mkhomedir
+      - python3
+    state: present
+
+- name: Upload DS389 configuration files
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    owner: "{{item.owner}}"
+    group: "{{item.group}}"
+    mode: "{{item.mode}}"
+  loop:
+    - {src: 'files/.dsrc', dest: '/root/.dsrc', owner: 'root', group: 'root', mode: '0400'}
+    - {src: 'files/.dsrcpw.j2', dest: '/root/.dsrcpw', owner: 'root', group: 'root', mode: '0400'}
+
+- name: Creates directory sssd
+  file:
+    path: /etc/sssd
+    state: directory
+
+- name: Upload sssd.conf file
+  template:
+    src: files/sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: '0600'
+
+- name: Add pam lines
+  lineinfile:
+    path: /etc/pam.d/system-auth
+    state: present
+    line: "session optional pam_oddjob_mkhomedir.so skel=/etc/skel/ umask=0022"
+
+- name: Start sssd and oddjobd
+  systemd:
+    state: restarted
+    daemon_reload: true
+    enabled: true
+    name: "{{item}}"
+  loop:
+    - "sssd"
+    - "oddjobd"
+
+...

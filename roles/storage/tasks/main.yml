@@ -1,0 +1,31 @@
+---
+
+- name: Install prerequisites for user management and storage
+  dnf:
+    name:
+      - nfs-utils
+    state: present
+
+- name: Add fstab lines
+  lineinfile:
+    path: /etc/fstab
+    state: present
+    line: "{{ storage_mount }}"
+
+- name: Update hosts file
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item.ip }} {{ item.fqdn }} {{ item.name }}"
+  loop:
+    "{{ hosts }}"
+
+- name: Creates working directories
+  file:
+    path: "/mountpoint"
+    state: directory
+
+- name: Mount NFS4
+  command: mount -a
+
+...

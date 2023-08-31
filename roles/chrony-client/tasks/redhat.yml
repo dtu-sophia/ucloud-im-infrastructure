@@ -1,0 +1,20 @@
+---
+
+- name: Install dependency on missing on CentOS 8
+  dnf:
+    name: libselinux-python3
+    state: installed
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '8'
+
+- name: Package | Ensure chrony installed (RedHat).
+  yum:
+    name: "{{ packages }}"
+    state: installed
+  vars:
+    packages: "{{ chrony_packages }}"
+
+- name: Timezone |  set timezone to Europe/Copenhagen
+  timezone:
+    name: Europe/Copenhagen
+
+...

@@ -1,0 +1,6 @@
+---
+
+- name: Create Deic Integration Portal group to authorize users on resources
+  command: dsidm {{instance}} posixgroup create --cn {{auth_group}} --gidNumber {{auth_group_gid}}
+
+...

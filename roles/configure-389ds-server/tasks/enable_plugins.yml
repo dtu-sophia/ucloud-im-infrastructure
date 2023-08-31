@@ -1,0 +1,35 @@
+---
+
+- name: Enable MemberOf plugin
+  command: "{{ item }}"
+  with_items:
+    - "dsconf {{ instance }} plugin memberof enable"
+    - "dsconf {{ instance }} plugin memberof set --scope {{ domain_component }}"
+  notify:
+    - Restart instance
+
+- name: Enable DNA plugin
+  command: "{{ item }}"
+  with_items:
+    - "dsconf {{ instance }} plugin dna config \"Account IDs\" add --type uidNumber --filter \"(objectclass=posixAccount)\" --scope {{ domain_component }} --next-value {{ uid_gid_start }} --magic-regen {{ dna_plugin_trigger }}"
+    - "dsconf {{ instance }} plugin dna config \"Group IDs\" add --type gidNumber --filter \"(|(objectclass=posixAccount)(objectclass=posixGroup))\" --scope {{ domain_component }} --next-value {{ uid_gid_start }} --magic-regen {{ dna_plugin_trigger }}"
+    - "dsconf {{ instance }} plugin dna enable"
+  notify:
+    - Restart instance
+
+- name: Ensure attributes are unique across database
+  command: "{{ item }}"
+  with_items:
+    - "dsconf {{ instance }} plugin attr-uniq add \"mail attribute uniqueness\" --attr-name mail --subtree {{ domain_component }}"
+#    - "dsconf {{ instance }} plugin attr-uniq add \"mail attribute uniqueness\" --attr-name mail --attr-name mailAlternateAddress --subtree {{ domain_component }}"
+    - "dsconf {{ instance }} plugin attr-uniq add \"uid attribute uniqueness\" --attr-name uid --subtree {{ domain_component }}"
+    - "dsconf {{ instance }} plugin attr-uniq add \"uidNumber attribute uniqueness\" --attr-name uidNumber --subtree {{ domain_component }}"
+    - "dsconf {{ instance }} plugin attr-uniq add \"gidNumber attribute uniqueness\" --attr-name gidNumber --subtree {{ domain_component }}"
+    - "dsconf {{ instance }} plugin attr-uniq enable \"mail attribute uniqueness\""
+    - "dsconf {{ instance }} plugin attr-uniq enable \"uid attribute uniqueness\""
+    - "dsconf {{ instance }} plugin attr-uniq enable \"uidNumber attribute uniqueness\""
+    - "dsconf {{ instance }} plugin attr-uniq enable \"gidNumber attribute uniqueness\""
+  notify:
+    - Restart instance
+
+...

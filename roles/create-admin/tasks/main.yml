@@ -1,0 +1,42 @@
+---
+
+- name: Add admin group
+  group:
+    name: admin
+    state: present
+
+- name: Install dependency for adding sudoer rule
+  package:
+    name: 'libselinux-python3'
+    state: latest
+
+- name: Add sudoer rule for admin group members
+  copy:
+    content: '%admin        ALL=(ALL)       NOPASSWD: ALL'
+    dest: /etc/sudoers.d/admin
+    owner: root
+    group: root
+    mode: 0440
+    validate: /usr/sbin/visudo -csf %s
+
+- name: Add local admin user
+  user:
+    name: "{{ item.username }}"
+    group: admin
+    shell: /bin/bash
+    home: "/home/{{ item.username }}"
+    create_home: true
+    state: present
+  loop:
+    "{{ admins }}"
+
+- name: Add SSH public key for admins
+  authorized_key:
+    user: "{{ item.username }}"
+    key:
+      "{{ item.sshkey }}"
+    state: present
+  loop:
+    "{{ admins }}"
+
+...

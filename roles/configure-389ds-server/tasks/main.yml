@@ -1,0 +1,18 @@
+---
+
+- include_tasks: install_server.yml
+  when: install_server
+
+- include_tasks: create_instance.yml
+  when: create_instance
+
+- include_tasks: enable_plugins.yml
+  when: enable_plugins
+
+- include_tasks: create_authgroup.yml
+  when: enable_authgroup
+
+- include_tasks: firewall_ports.yml
+  when: firewall_ports
+
+...

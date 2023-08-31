@@ -1,0 +1,12 @@
+refreshToken: get-from-UCloud-Team
+
+envoy:
+  executable: "/usr/bin/envoy"
+  funceWrapper: false
+  directory: "/home/ucloud/config-prod/run/envoy"
+  downstreamTls: true
+
+network:
+  listenAddress: "0.0.0.0"
+  listenPort: 8889
+

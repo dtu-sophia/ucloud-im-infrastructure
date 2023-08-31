@@ -1,0 +1,4 @@
+---
+- name: Restart instance
+  command: dsctl {{ instance }} restart
+...

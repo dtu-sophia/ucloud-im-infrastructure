@@ -1,0 +1,27 @@
+---
+
+- name: Perform full patching
+  package:
+    name: '*'
+    state: latest
+
+- name: Install fail2ban
+  package: name=fail2ban state=latest
+
+- name: Enable fail2ban service and ensure it's started
+  systemd:
+    name: fail2ban
+    enabled: true
+    state: restarted
+
+- name: Disable root login via SSH
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  notify:
+    - restart sshd
+
+- name: Disable password login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  notify:
+    - restart sshd
+
+...

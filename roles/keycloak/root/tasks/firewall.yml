@@ -1,0 +1,28 @@
+---
+
+- name: Install firewalld
+  dnf:
+    name: firewalld-1.2.1
+    state: present
+
+- name: Enables firewalld
+  systemd:
+    state: started
+    enabled: true
+    name: firewalld
+
+- name: Allows port 8443
+  ansible.posix.firewalld:
+    immediate: true
+    port: 8443/tcp
+    permanent: true
+    state: enabled
+    zone: public
+
+- name: Restart firewalld
+  systemd:
+    state: restarted
+    daemon_reload: true
+    name: firewalld
+
+...

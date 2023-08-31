@@ -1,0 +1,5 @@
+[{{ instance }}]
+uri = ldapi://%%2fvar%%2frun%%2fslapd-{{ instance }}.socket
+basedn = {{ domain_component }}
+binddn = cn=Directory Manager
+pwdfile = /root/dm-password-file

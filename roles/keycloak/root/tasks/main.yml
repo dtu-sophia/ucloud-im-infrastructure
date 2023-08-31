@@ -1,0 +1,8 @@
+---
+
+- include_tasks: user.yml
+- include_tasks: podman.yml
+- include_tasks: firewall.yml
+- include_tasks: selinux.yml
+
+...

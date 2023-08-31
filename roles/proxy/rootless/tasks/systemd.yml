@@ -1,0 +1,28 @@
+---
+
+- name: Create user systemd directory
+  file:
+    path: /home/{{user}}/.config/systemd/user
+    state: directory
+    mode: '0750'
+    recurse: true
+
+- name: chdir and execute command
+  command: "podman generate systemd --name proxy --files --new"
+  args:
+    chdir: "/home/{{user}}/.config/systemd/user"
+
+- name: Stops container
+  containers.podman.podman_container:
+    name: proxy
+    state: stopped
+
+- name: Start as systemd
+  systemd:
+    name: container-proxy.service
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    scope: "user"
+
+...

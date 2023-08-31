@@ -1,0 +1,5 @@
+embed-server --server-config=standalone-ha.xml --std-out=discard
+/subsystem=keycloak-server/spi=hostname/provider=default:write-attribute(name=properties.frontendUrl,value={{frontend_ep}})
+/subsystem=keycloak-server/spi=hostname/provider=default:write-attribute(name=properties.forceBackendUrlToFrontendUrl,value=false)
+/subsystem=keycloak-server/spi=hostname/provider=default:write-attribute(name=properties.adminUrl,value={{admin_ep}})
+stop-embedded-server

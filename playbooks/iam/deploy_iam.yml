@@ -1,0 +1,18 @@
+---
+
+- import_playbook: ./prerequisites.yml
+
+- name: Runs IAM service
+
+  hosts: auth_service
+  become: true
+  become_user: kcuser
+  remote_user: deploy-user
+
+  roles:
+    - keycloak/rootless
+
+  vars_files:
+    - vars.yml
+
+...

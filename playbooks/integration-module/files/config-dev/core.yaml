@@ -1,0 +1,26 @@
+providerId: sophia
+developmentMode: true
+
+
+cors:
+  allowHosts:
+    - dev.cloud.sdu.dk
+    - rc.dtu.dk
+
+
+ipc: 
+  directory: /home/ucloud/config-dev/run
+logs: 
+  directory: /home/ucloud/config-dev/logs
+  trace: 
+    - SHELL
+hosts:
+    self:
+        host: ucloud-dev.rc.dtu.dk
+        scheme: https
+        port: 443
+
+    ucloud:
+        host: ucloud-dev.rc.dtu.dk
+        scheme: https
+        port: 443

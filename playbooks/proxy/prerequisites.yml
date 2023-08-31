@@ -1,0 +1,15 @@
+---
+
+- name: Packages, firewall, user
+  hosts: proxy
+  become: true
+  vars:
+    user: "proxyuser"
+    comment: "Proxy User"
+  remote_user: deploy-user
+  roles:
+    - name: create-admin
+    - name: harden-server
+    - name: proxy/root
+
+...

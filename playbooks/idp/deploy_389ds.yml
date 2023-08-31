@@ -1,0 +1,36 @@
+---
+
+- hosts: user_db
+  remote_user: deploy-user
+  become: true
+
+  vars:
+
+    firewall_ports: true
+    setup_ca: false
+    sign_cert: false
+    cert_path: /etc/openldap/certs
+    enable_ldaps: false
+    install_server: true
+    create_instance: true
+    enable_plugins: true
+
+    uid_gid_start: 12345678
+    dna_plugin_trigger: -1
+
+    auth_group: "login_group"
+    auth_group_gid: 23456789
+    enable_authgroup: true
+
+    instance: idp-instance-name
+    instance_file: "{{ instance }}-instance.inf"
+    domain_component: "dc=component1,dc=component2,dc=component3,dc=component4"
+    directory_manager_pw: "secret password"
+    dsrc_file: dsrc
+
+  roles:
+    - role: create-admin 
+    - role: harden-server
+    - role: chrony-client
+    - role: configure-389ds-server
+...

@@ -1,0 +1,59 @@
+connection:
+    # Specifies the plugin type. The remaining configuration is specific to this plugin.
+    type: OpenIdConnect
+
+    # Determines for how long we should consider the connection valid. Once the time-to-live has expired, the user
+    # must reestablish the connection.
+    mappingTimeToLive:
+        days: 1
+
+    # Endpoints used in the OIDC protocol.
+    endpoints:
+        auth: https://auth.rc.dtu.dk/auth/realms/deic-dev/protocol/openid-connect/auth
+        token: https://iam-host:8443/auth/realms/deic-dev/protocol/openid-connect/token
+
+    # Client information used in the OIDC protocol.
+    client:
+        id: im-ucloud
+        secret: 7eu234yc9rcU22IRoQURXO
+
+    # Extensions which will be invoked by the plugin when certain events occur.
+    extensions:
+        # Invoked when the connection has completed.
+        onConnectionComplete: /home/ucloud/im-extensions/connection-complete
+    redirectUrl: https://dev.cloud.sdu.dk
+
+    signing: 
+     algorithm: RS256
+     key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAETHETNHTITHmtwdFuFzZk9zD4tFsM2lBEZ+XUFCsgxzvGK7e6L2GJJXYmT6bSPY1K8+B/uV9rgpviZopuapjai6YRykBP1LDJKCXsNv//ddN1pAUiwu9QaU6mfkDnsAglJdismNSB/8AdvLkp9bb7E/vlOwWvaTA5HPnv3Bh5byUsLHdCIx+ay1HhOwGl8pF9FzfQDvOQxuMNn6L7E+xkPD5OojPj/kAvlLqeZz7c1eIwRxgnP9OrphHJT6wIDAQAB 
+     issuer: https://auth.rc.dtu.dk/auth/realms/deic-dev
+
+projects:
+    type: Simple
+    unixGroupNamespace: 2000
+    extensions:
+        all: /home/ucloud/im-extensions/project-extension
+
+jobs:
+    default:
+        type: Slurm
+        matches: im-cpu
+        partition: slurm-queue-name
+        mountpoint: /mountpoint/dev/projects
+        useFakeMemoryAllocations: false
+        terminal:
+          type: SSH
+          generateSshKeys: false
+        ssh: null
+
+files:
+    default:
+        type: Posix
+        matches: im-storage
+
+fileCollections:
+    default:
+        type: Posix
+        matches: im-storage
+        extensions:
+          additionalCollections: /home/ucloud/im-extensions/drive-locator

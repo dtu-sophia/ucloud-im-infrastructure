@@ -1,0 +1,300 @@
+:root {
+	--mdc-theme-primary:  #990000; /* #030F4F; */
+	--mdc-theme-on-primary: #ffffff;
+	--mdc-theme-secondary: #201D1D;
+	--mdc-typography-font-family: Roboto, Helvetica, sans-serif;
+}
+
+.logo {
+	width: 250px;
+	margin-top:50px;
+}
+
+.sidebar {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.logo-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;	
+}
+
+.content-cell {
+	height: 60%;
+	display: flex;
+	align-items: flex-start;
+	margin-top: 25%;
+	margin-bottom: 10px;
+}
+
+
+.custom-body {
+	border-top: 4px solid #990000;
+	padding: 0px;
+	margin: 0px;
+	height: calc(100% - 4px);
+}
+
+.custom-html {
+	height: 100%;
+}
+
+
+.fade-out{
+  	animation-name: fadeout;
+  	animation-duration: 3s;
+  	animation-iteration-count: 1;
+}
+
+.fade-in{
+  	animation-name: fadein;
+  	animation-duration: 3s;
+  	animation-iteration-count: 1;
+}
+
+.loading-box {
+    	width: 360px;
+    	height: 270px;
+    	background-color: blue;
+    	display: flex;
+    	position: absolute;
+    	top: 30%;
+    	left: 30%;
+    	background-image: url('../img/loading.gif');
+    	background-repeat: no-repeat;
+    	background-position: center;
+    	opacity: 0;
+}
+
+
+.login-class {
+	max-width: 400px;
+	margin: 0px auto;
+	font-family: var(--mdc-typography-font-family);
+	color:  var(--mdc-theme-secondary); 
+}
+
+.kc-logo-text {
+	font-size: 1.5rem;
+	font-family: var(--mdc-typography-font-family);
+	color:  var(--mdc-theme-secondary);
+}
+
+.mdc-button.dark {
+	  --mdc-theme-primary: var(--mdc-theme-secondary);
+}
+
+.mdc-text-field.dark {
+	  --mdc-theme-primary: var(--mdc-theme-secondary);
+}
+
+.kc-formheader-class h1{
+	font-size: 1.2rem;
+	font-weight: normal;
+	margin-top: 50px;
+	margin-bottom: 30px
+}
+
+
+.kc-buttons-grp .form-settings {
+	display: flex;
+	align-items: center;
+}
+
+#kc-totp-settings{
+	font-size: 14px;
+	margin:0px;
+}
+
+
+/* totp reg form */
+
+.flex-form {
+	display: flex;
+	flex-direction: column;
+	row-gap: 20px;
+}
+
+.alert-warning.pf-m-warning{
+	font-size: 14px;
+}
+
+.alert-error.pf-m-danger{
+	font-size: 14px;
+}
+
+
+.highlight {
+	color:  var(--mdc-theme-primary);
+}
+
+
+
+
+.flex-inline {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	column-gap: 50px;
+}
+
+.flex-col {
+	display:flex; 
+	flex-direction:column; 
+	align-items: center; 
+	row-gap: 5px;
+}
+
+.spaced {
+	margin: 30px 0px;
+}
+
+
+.input-error {
+	color: red;
+	font-size: 0.875rem;
+	margin-left: 5px;
+	height:16px;
+}
+
+.mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+	color: var(--mdc-theme-primary)
+}
+
+#kc-login{
+	width: 150px;
+}
+
+#kc-info{
+	font-size: 0.75rem;
+	margin-top: 50px;
+}
+
+#kc-content-wrapper{
+	display: flex;
+	flex-direction: column;
+	row-gap: 20px;
+}
+
+a {
+	text-transform: none;
+	text-decoration: none;
+	color: var(--mdc-theme-secondary);
+	font-size: 14px;
+}
+
+
+.form-settings{
+  	display: flex;
+  	align-items: center;
+  	column-gap: 30px;
+}
+
+
+.form-email-fg{
+	width: 100%;
+}
+
+
+.flex-grid {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	column-gap: 10px;
+	
+}
+
+.cell-right{
+	background-image: url('../img/bg.jpg');
+	background-size: cover;	
+	background-repeat: repeat;
+}
+
+.cell-left {
+	padding: 0px 50px;
+}
+
+.tall {
+ 	height: 100%;
+}
+
+.extra-paragraph {
+	color: #555555;
+	margin-top: 50px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.pterms {
+	display: flex;
+	margin: 15% auto 0px auto;
+}
+
+
+html, 
+body {
+    	height: -webkit-fill-available; /*calc(100% - 4px);*/
+}
+
+
+
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (max-width: 800px) {
+
+	.cell-left {
+		width: 100%;
+	}
+
+	.cell-right {
+		display: none;
+	}
+
+}
+
+
+
+@media only screen and (min-width: 801px) and (max-width: 1366px) {
+
+	.cell-left {
+		width: 40%;
+	}
+
+	.cell-right {
+		width: 60%;
+	}
+
+}
+
+
+@media  only screen and (min-width: 1367px) {
+
+	.cell-left {
+		width: 30%;
+	}
+
+	.cell-right {
+		width: 70%;
+	}
+
+}
+
+
+
+@keyframes fadeout {
+  0%   {opacity:1;}
+  100% {opacity:0.1;}
+}
+
+@keyframes fadein {
+  0%   {opacity:0;}
+  100% {opacity:1;}
+}
+
+

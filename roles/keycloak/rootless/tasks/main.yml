@@ -1,0 +1,9 @@
+---
+
+- include_tasks: certs.yml
+- include_tasks: network.yml
+- include_tasks: db.yml
+- include_tasks: iam.yml
+- include_tasks: systemd.yml
+
+...

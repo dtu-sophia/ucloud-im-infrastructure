@@ -1,0 +1,5 @@
+[{{ instance }}]
+uri = {{uri_389}}:{{port_389}}
+basedn = {{domain_component}}
+binddn = cn=Directory Manager
+

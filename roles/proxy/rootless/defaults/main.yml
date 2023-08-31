@@ -1,0 +1,30 @@
+---
+
+user: "someuser"
+generate_certs: true
+
+vms:
+
+  - type: "prod"
+    name: "prod.host"
+
+    upstream_block: |
+      # UPSTREAM DEFS
+    upstream_rules: |
+      # UPSTREAM RULES
+
+  - type: "dev"
+    name: "dev.host"
+
+    upstream_block: |
+      # UPSTREAM DEFS
+    upstream_rules: |
+      # UPSTREAM RULES
+
+  - type: "iam"
+    name: "iam.host"
+
+    upstream_block: |
+      # UPSTREAM DEFS
+    upstream_rules: |
+      # UPSTREAM RULES

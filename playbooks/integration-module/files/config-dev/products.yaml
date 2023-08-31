@@ -1,0 +1,21 @@
+compute:
+    im-cpu:
+      - name: im-cpu-1
+        description: default cpu product
+        cost: 
+          currency: DKK
+          frequency: DAY
+          price: 1
+          quota: false
+        cpu: 32
+        memoryInGigs: 96
+
+storage:
+    im-storage:
+      - name: im-storage-1
+        description: default storage
+        cost:
+          currency: DKK
+          frequency: DAY
+          price: 1
+          quota: false

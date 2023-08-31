@@ -1,0 +1,21 @@
+---
+
+- name: Ensure firewalld is running
+  systemd:
+    state: restarted
+    daemon_reload: true
+    name: firewalld
+
+- name: Open 389ds firewall ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - 389/tcp
+    - 636/tcp
+    - 9830/tcp
+    - 9090/tcp
+
+...

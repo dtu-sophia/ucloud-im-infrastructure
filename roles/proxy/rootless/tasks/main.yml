@@ -1,0 +1,8 @@
+---
+- include_tasks: certs.yml
+  when: generate_certs
+
+- include_tasks: proxy.yml
+- include_tasks: systemd.yml
+
+...

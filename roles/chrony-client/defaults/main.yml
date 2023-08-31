@@ -1,0 +1,14 @@
+---
+
+chrony_packages:
+  - chrony
+
+chrony_config_server:
+  - ntp1.server.domain
+  - ntp2.server.domain
+
+chrony_config_allow: []
+
+chrony_config_logdir: '/var/log/chrony'
+
+...

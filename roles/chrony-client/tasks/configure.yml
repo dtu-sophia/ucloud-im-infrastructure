@@ -1,0 +1,26 @@
+---
+
+- name: service | chrony is started and enabled at boot.
+  service:
+    name: "{{ chrony_service_name }}"
+    state: stopped
+
+- name: Synchronize | clock with local time server
+  shell: chronyd -q 'server ntp1.server.domain iburst'
+
+- name: Copy the chrony.conf.
+  template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_config_location }}"
+    owner: root
+    group: root
+    mode: 0664
+  notify: restart chrony
+
+- name: service | chrony is started and enabled at boot.
+  service:
+    name: "{{ chrony_service_name }}"
+    state: started
+    enabled: true
+
+...

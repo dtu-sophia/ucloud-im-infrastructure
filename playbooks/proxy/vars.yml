@@ -1,0 +1,117 @@
+container_image: "docker.io/nginxinc/nginx-unprivileged:1.25-alpine"
+
+user: "proxyuser"
+generate_certs: true
+
+vms:
+
+  - type: "wildcard"
+    name: "*.ucloud.rc.dtu.dk"
+
+    upstream_block: |
+          upstream u_integration_module_wildcard {
+              server integration-module-host:8889;
+          }
+          map $http_upgrade_wildcard $connection_upgrade_wildcard {
+              default upgrade;
+              ''      close;
+          }
+
+    upstream_rules: |
+          client_max_body_size 34M;
+
+          location / {
+              proxy_pass https://u_integration_module_wildcard;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade_wildcard;
+              proxy_set_header Connection $connection_upgrade_wildcard;
+              proxy_buffer_size          128k;
+              proxy_buffers              4 256k;
+              proxy_busy_buffers_size    256k;
+          }
+
+          location /stub {
+                  stub_status on;
+          }
+
+
+  - type: "prod"
+    name: "ucloud.rc.dtu.dk"
+
+    upstream_block: |
+          upstream u_integration_module {
+              server integration-module-host:8889;
+          }
+          map $http_upgrade $connection_upgrade {
+              default upgrade;
+              ''      close;
+          }
+
+    upstream_rules: |
+          client_max_body_size 34M;
+
+          location / {
+              proxy_pass https://u_integration_module;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection $connection_upgrade;
+              proxy_buffer_size          128k;
+              proxy_buffers              4 256k;
+              proxy_busy_buffers_size    256k;
+          }
+
+          location /stub {
+                  stub_status on;
+          }
+
+
+  - type: "dev"
+    name: "ucloud-dev.rc.dtu.dk"
+
+    upstream_block: |
+          upstream u_integration_module_dev {
+              server integration-module-host:8889;
+          }
+          map $http_upgrade_dev $connection_upgrade_dev {
+              default upgrade;
+              ''      close;
+          }
+
+    upstream_rules: |
+          client_max_body_size 34M;
+          location / {                  
+                  proxy_pass https://u_integration_module_dev;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade_dev;
+                  proxy_set_header Connection $connection_upgrade_dev;
+                  proxy_buffer_size          128k;
+                  proxy_buffers              4 256k;
+                  proxy_busy_buffers_size    256k;
+          }
+          location /stub {
+                      stub_status on;
+          }
+
+  - type: "iam"
+    name: "auth.rc.dtu.dk"
+
+    upstream_block: |
+          upstream u_keycloak {
+              server iam-host:8443;
+          }
+
+    upstream_rules: |
+          # https://www.keycloak.org/server/reverseproxy
+          location ~ ^/(auth/js|auth/realms|auth/resources|auth/robots)/   {
+              proxy_pass https://u_keycloak ;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Forwarded-Host $host;
+              proxy_buffer_size          128k;
+              proxy_buffers              4 256k;
+              proxy_busy_buffers_size    256k;
+          }
+          location /stub {
+                  stub_status on;
+          }
+

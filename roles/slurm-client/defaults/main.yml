@@ -1,0 +1,10 @@
+---
+
+slurm_version: "20.11.9"
+slurm_conf_acct: "compute-cluster-host"
+openhpc_rpm: "http://repos.openhpc.community/OpenHPC/2/EL_8/x86_64/ohpc-release-2-1.el8.x86_64.rpm"
+clustername: "clustername"
+controlmachine: "clustername-controlmachine"
+nodelist: "n[0001-9999]"
+
+...

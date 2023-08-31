@@ -1,0 +1,32 @@
+---
+
+- name: Create a directory if it does not exist
+  file:
+    path: /home/{{user}}/proxy/conf.d/
+    state: directory
+    mode: '0750'
+    recurse: true
+
+- name: Upload im file
+  template:
+    src: files/proxy.conf.j2
+    dest: /home/{{user}}/proxy/conf.d/{{vm.name}}.conf
+    mode: '0640'
+  loop: "{{ vms }}"
+  loop_control:
+    loop_var: vm
+
+- name: Runs rootless proxy
+  containers.podman.podman_container:
+    name: proxy
+    state: started
+    recreate: true
+    image: "{{container_image}}"
+    user: 101
+    volume:
+      - "/home/{{user}}/proxy/conf.d:/etc/nginx/conf.d:Z,U"
+      - "/home/{{user}}/proxy/certs:/etc/nginx/certs:Z,U"
+    ports:
+      - "8443:8443"
+
+...

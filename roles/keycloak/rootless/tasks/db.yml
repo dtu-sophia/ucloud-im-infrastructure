@@ -1,0 +1,50 @@
+---
+
+- name: Creates volume pgdata
+  containers.podman.podman_volume:
+    state: present
+    name: pgdata
+
+- name: Creates db pwd
+  command: openssl rand -base64 14
+  register: pgpwd
+
+- name: Creates db user
+  command: openssl rand -hex 10
+  register: pguser
+
+- name: Create pwd secret
+  containers.podman.podman_secret:
+    state: present
+    force: true
+    name: pgpwd
+    data: "{{pgpwd.stdout}}"
+
+- name: Create user secret
+  containers.podman.podman_secret:
+    state: present
+    force: true
+    name: pguser
+    data: "{{pguser.stdout}}"
+
+- containers.podman.podman_container:
+    name: postgres14
+    state: started
+    recreate: true
+    image: "{{db_image}}"
+    user: 70
+    network: "container-network"
+    volume:
+      - pgdata:/var/lib/postgresql/data/:Z
+    env:
+      POSTGRES_DB: "keycloak"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_USER_FILE: "/run/secrets/pguser"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/pgpwd"
+    secrets:
+      - pguser
+      - pgpwd
+    ports:
+      - "5432:5432"
+
+...

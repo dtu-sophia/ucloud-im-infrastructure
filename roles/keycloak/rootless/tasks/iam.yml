@@ -1,0 +1,122 @@
+---
+
+- name: Create remote directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    recurse: true
+  with_items:
+    - "/home/{{user}}/jboss/startup-scripts"
+    - "/home/{{user}}/jboss/themes/custom-theme"
+    - "/home/{{user}}/jboss/realms"
+    - "/home/{{user}}/.config/systemd/user"
+
+- name: Upload config files keycloak
+  copy:
+    src: "files/{{item}}"
+    dest: "/home/{{user}}/jboss/startup-scripts/{{item}}"
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: '0750'
+  with_items:
+    - b-configure-caches.cli
+    - c-configure-proxy.cli
+    - d-configure-session-affinity.cli
+
+- name: Upload hostname template
+  template:
+    src: files/a-configure-hostname.j2
+    dest: "/home/{{user}}/jboss/startup-scripts/a-configure-hostname.cli"
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: '0750'
+
+- name: Upload realm settings
+  template:
+    src: "files/{{ item }}.j2"
+    dest: "/home/{{user}}/jboss/realms/{{ item }}"
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: '0750'
+  when: realm_deic
+  loop:
+    - deic-realm.json
+    - deic-dev-realm.json
+
+- name: Upload custom theme
+  copy:
+    src: custom-theme/
+    dest: "/home/{{user}}/jboss/themes/custom-theme/"
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: '0750'
+  when: realm_deic
+
+- name: Upload email signature information
+  template:
+    src: files/emailtheme.properties.j2
+    dest: "/home/{{user}}/jboss/themes/custom-theme/email/theme.properties"
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: '0750'
+  when: realm_deic
+
+- name: Creates password variable
+  command: openssl rand -base64 20
+  register: kc_pwd
+
+- name: Creates admin variable
+  command: openssl rand -hex 10
+  register: admin_name
+
+- name: Create admin pass secret
+  containers.podman.podman_secret:
+    state: present
+    force: true
+    name: kcpwd
+    data: "{{kc_pwd.stdout}}"
+
+- name: Create admin pass secret
+  containers.podman.podman_secret:
+    state: present
+    force: true
+    name: kcuser
+    data: "{{admin_name.stdout}}"
+
+- name: Runs rootless keycloak
+  containers.podman.podman_container:
+    name: keycloak
+    state: started
+    recreate: true
+    image: "{{kc_image}}"
+    command:
+      - "-b 0.0.0.0"
+      - "-Dkeycloak.import=/opt/jboss/data/import/deic-realm.json,/opt/jboss/data/import/deic-dev-realm.json"
+    user: 1000
+    network: "container-network"
+    volume:
+      - "/home/{{user}}/jboss/startup-scripts:/opt/jboss/startup-scripts/:Z,U"
+      - "{{cert_dir}}/:/etc/x509/https:Z,U"
+      - "/home/{{user}}/jboss/realms:/opt/jboss/data/import:Z,U"
+      - "/home/{{user}}/jboss/themes/custom-theme:/opt/jboss/keycloak/themes/custom-theme:Z,U"
+    env:
+      KEYCLOAK_ALWAYS_HTTPS: true
+      SECMGR: true
+      KEYCLOAK_USER_FILE: /run/secrets/kcuser
+      KEYCLOAK_PASSWORD_FILE: /run/secrets/kcpwd
+      DB_VENDOR: "{{db_vendor}}"
+      DB_ADDR: "{{db_host}}"
+      DB_DATABASE: "{{db_schema}}"
+      DB_PORT: "{{db_port}}"
+      DB_USER_FILE: "/run/secrets/pguser"
+      DB_PASSWORD_FILE: "/run/secrets/pgpwd"
+    secrets:
+      - kcuser
+      - kcpwd
+      - pguser
+      - pgpwd
+    ports:
+      - "8443:8443"
+
+...

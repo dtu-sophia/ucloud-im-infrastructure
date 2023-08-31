@@ -1,0 +1,11 @@
+[general]
+config_version = 2
+selinux = true
+
+[slapd]
+instance_name = {{ instance }}
+root_password = {{ directory_manager_pw }}
+
+[backend-userroot]
+sample_entries = yes
+suffix = {{ domain_component }}

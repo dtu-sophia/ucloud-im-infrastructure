@@ -1,0 +1,129 @@
+---
+
+- name: Prerequisites
+  hosts: ucloud_im_prod
+  remote_user: deploy-user
+  become: true
+
+  pre_tasks:
+
+    - name: Add UCloud user
+      user:
+        name: ucloud
+        comment: UCloud User
+        create_home: true
+        shell: "/bin/bash"
+
+    - name: Enable linger
+      command: "loginctl enable-linger ucloud"
+      
+    - name: Add sudoers rule
+      lineinfile:
+        path: /etc/sudoers
+        line: "ucloud  ALL=(ALL:ALL) NOPASSWD: ALL"
+        create: true
+
+    - name: Installs Development Tools
+      dnf:
+        name: '@Development tools'
+        state: present
+
+    - name: Enable 389-ds module
+      command: dnf module enable -y 389-ds
+
+    - name: Install prerequisites for user management and storage
+      dnf:
+        name:
+          - python3-lib389
+          - 389-ds-base
+          - sssd
+          - oddjob
+          - oddjob-mkhomedir
+          - nfs-utils
+          - git
+          - java-17-openjdk
+          - gcc
+          - python3
+        state: present
+
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Allow all users to list
+      file:
+        path: /home/ucloud
+        mode: "0775"
+        state: directory
+
+    - name: Install firewalld
+      dnf:
+        name: firewalld-0.9.3
+        state: present
+
+    - name: Enables firewalld
+      systemd:
+        state: started
+        enabled: true
+        name: firewalld
+
+    - name: Open ports
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      with_items:
+        - 8889/tcp
+        - 42000/tcp
+
+
+  roles:
+
+    - name: rit-chrony-client
+    - name: create-admin
+    - name: envoy
+
+    - name: graalvm
+      vars:
+        user: "ucloud"
+      become: true
+      become_user: "{{user}}"
+
+    - name: storage
+    - name: slurm-client
+    - name: configure-389ds-sssd-client
+
+
+  post_tasks:
+
+    - name: Grant user management privileges to ucloud user
+      copy:
+        remote_src: true
+        src: "/root/{{ item }}"
+        dest: "/home/ucloud/{{ item }}"
+        owner: ucloud
+        group: ucloud
+      loop:
+        - "dsrc.instance.file"
+        - "dsrc.password.file"
+
+    - name: Create directory structure
+      file:
+        path: "{{item.path}}"
+        mode: "{{item.mode}}"
+        owner: "{{item.owner}}"
+        group: "{{item.group}}"
+        recurse: true
+        state: directory
+      loop:
+        - {path: "/mountpoint/users", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/projects", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/software", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/dev", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/dev/users", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/dev/projects", mode: "755", owner: "root", group: "root"}
+        - {path: "/mountpoint/dev/software", mode: "755", owner: "root", group: "root"}
+
+...

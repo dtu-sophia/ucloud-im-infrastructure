@@ -1,0 +1,17 @@
+compute:
+    sophia-slim:
+      - name: sophia-slim
+        description: default cpu product
+        cost: 
+          quota: false
+          currency: UNITS
+          frequency: HOUR
+        cpu: 32
+        memoryInGigs: 96
+
+storage:
+    sophia-storage:
+      - name: sophia-storage
+        description: default storage
+        cost:
+          quota: true

@@ -1,0 +1,40 @@
+---
+
+frontend_ep: "https://keycloak.frontend/auth/"
+admin_ep: "https://keycloak.backend/auth/"
+
+kc_registry: "domain.registry"
+kc_image: "{{kc_registry}}/image:tag"
+
+db_registry: "domain.registry"
+db_image: "{{db_registry}}/image:tag"
+
+db_vendor: "postgres"
+db_schema: "postgres"
+db_host: "database.domain"
+db_port: "5432"
+
+user: "kcuser"
+cert_dir: "/home/{{user}}/keycloak/certs"
+
+realm_deic: false
+
+realm_email_host: "email.domain"
+realm_email_from: "support@email.domain"
+realm_client_redirect_url: "https://public.domain/*"
+realm_theme: "custom-theme"
+
+dev_realm_email_host: "email.domain"
+dev_realm_email_from: "support@email.domain"
+dev_realm_client_redirect_url: "https://public.domain/*"
+dev_realm_theme: "custom-theme"
+
+signature_logo: "Institution Logo URL"
+signature_author: "Institution Author"
+signature_function: "Author Function"
+signature_phone: "Author Phone"
+signature_email: "Author Email"
+signature_address1: "Address Line 1"
+signature_address2: "Address Line 2"
+signature_address3: "Address Line 3"
+signature_website: "Institution Website"

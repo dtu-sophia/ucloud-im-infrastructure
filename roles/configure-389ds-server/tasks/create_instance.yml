@@ -1,0 +1,24 @@
+---
+- name: Copy configuration
+  template:
+    src: "{{ instance_file }}.j2"
+    dest: "/root/{{ instance_file }}"
+    owner: root
+    group: root
+
+- name: Create instance
+  command: "dscreate from-file /root/{{ instance_file }}"
+  register: result
+  changed_when:
+    - '"may already exist" in result.stdout'
+  failed_when:
+    - '"Error:" in result.stdout'
+    - '"may already exist" not in result.stdout'
+
+- name: Configure .dsrc file 
+  template:
+    src: "{{ dsrc_file }}.j2"
+    dest: "/root/.{{ dsrc_file }}"
+    owner: root
+    group: root
+...

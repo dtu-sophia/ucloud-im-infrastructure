@@ -1,0 +1,25 @@
+{{vm.upstream_block}}
+
+server {
+       listen       8443 ssl http2 ;
+       listen       [::]:8443 ssl http2 ;
+       server_name   {{vm.name}};
+
+       ssl_certificate "/etc/nginx/certs/{{vm.name}}.crt";
+       ssl_certificate_key "/etc/nginx/certs/{{vm.name}}.key";
+       ssl_session_cache shared:SSL:1m;
+       ssl_session_timeout  10m;
+
+       #test and reduce to 1.3 if supported by ucloud
+       ssl_prefer_server_ciphers on;
+       ssl_protocols TLSv1.2 TLSv1.3;
+       ssl_ciphers 'HIGH:!aNULL:!MD5:!CAMELLIA128:!CAMELLIA256:!ECDHE-ECDSA-AES256-SHA384:!ECDHE-ECDSA-AES128-SHA256:!ECDHE-ECDSA-AES256-SHA:!ECDHE-ECDSA-AES128-SHA';
+ 
+       add_header Strict-Transport-Security "max-age=31536000; includeSubdomains;";
+
+       real_ip_header X-Forwarded-For;
+       real_ip_recursive on;
+
+       {{vm.upstream_rules}}
+
+   }

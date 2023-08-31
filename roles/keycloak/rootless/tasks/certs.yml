@@ -1,0 +1,23 @@
+---
+
+- name: Create remote certs directory
+  file:
+    path: "{{cert_dir}}"
+    state: directory
+    mode: "0755"
+    recurse: true
+
+- name: Create private key
+  command: "openssl ecparam \
+           -name secp384r1 -genkey -noout \
+           -out {{cert_dir}}/tls.key"
+
+- name: Save public key
+  command: "openssl ec -in {{cert_dir}}/tls.key -pubout \
+           -out {{cert_dir}}/public.crt"
+
+- name: Save selfsigned cert
+  command: "openssl req -new -x509 -key {{cert_dir}}/tls.key -out {{cert_dir}}/tls.crt  \
+           -days 360 -subj '/CN=IAM/O=ORGANISATION/OU=UNIT/C=COUNTRY' "
+
+...

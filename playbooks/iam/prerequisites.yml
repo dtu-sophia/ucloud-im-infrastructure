@@ -1,0 +1,13 @@
+---
+
+- name: Create admin users and the runtime configuration
+  hosts: auth_service
+  remote_user: deploy-user
+  become: true
+
+  roles:
+    - name: create-admin
+    - name: chrony-client
+    - name: keycloak/root
+
+...

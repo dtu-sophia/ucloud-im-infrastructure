@@ -1,0 +1,46 @@
+---
+
+- name: Create user systemd directory
+  file:
+    path: /home/{{user}}/.config/systemd/user
+    state: directory
+    mode: '0750'
+    recurse: true
+
+- name: Generates iam systemd unit file
+  command: "podman generate systemd --name keycloak --files --new"
+  args:
+    chdir: "/home/{{user}}/.config/systemd/user"
+
+
+- name: Generates db systemd unit file
+  command: "podman generate systemd --name postgres14 --files --new"
+  args:
+    chdir: "/home/{{user}}/.config/systemd/user"
+
+- name: Stops container
+  containers.podman.podman_container:
+    name: "{{item}}"
+    state: stopped
+  loop:
+    - postgres14
+    - keycloak
+
+- name: Starts DB as systemd unit
+  systemd:
+    name: container-postgres14.service
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    scope: "user"
+
+
+- name: Starts IAM as systemd unit
+  systemd:
+    name: container-keycloak.service
+    daemon_reload: true
+    state: restarted
+    enabled: true
+    scope: "user"
+
+...

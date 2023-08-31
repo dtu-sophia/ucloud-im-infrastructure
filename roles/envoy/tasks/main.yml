@@ -1,0 +1,24 @@
+---
+
+- name: Import key
+  command: rpm --import 'https://rpm.dl.getenvoy.io/public/gpg.CF716AF503183491.key'
+
+- name: Download GetEnvoy repository configuration
+  get_url:
+    url: 'https://rpm.dl.getenvoy.io/public/config.rpm.txt?distro=el&codename=8'
+    dest: /tmp/tetrate-getenvoy-rpm-stable.repo
+    mode: '0644'
+
+- name: Dnf config manager add repo
+  command: dnf config-manager --add-repo '/tmp/tetrate-getenvoy-rpm-stable.repo'
+
+- name: Dnf enable repo
+  command: dnf makecache -y --disablerepo='*' --enablerepo='tetrate-getenvoy-rpm-stable'
+
+- name: Install envoy
+  command: dnf install -y getenvoy-envoy
+
+- name: Dnf revert repo changes
+  command: dnf makecache -y --disablerepo='tetrate-getenvoy-rpm-stable'
+
+...

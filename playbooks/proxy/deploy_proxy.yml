@@ -1,0 +1,17 @@
+---
+
+- import_playbook: ./prerequisites.yml
+
+- name: Runs load balancer in user space
+  hosts: proxy
+  remote_user: deploy-user
+  become: true
+  become_user: proxyuser
+
+  roles:
+    - proxy/rootless
+
+  vars_files:
+    - vars.yml
+
+...

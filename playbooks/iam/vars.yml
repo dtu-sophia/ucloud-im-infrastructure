@@ -1,0 +1,33 @@
+user: "kcuser"
+
+frontend_ep: "https://auth.rc.dtu.dk/auth/"
+admin_ep: "https://iam-host:8443/auth/"
+
+kc_image: "quay.io/keycloak/keycloak:18.0.0-legacy"
+
+db_vendor: "postgres"
+db_host: "host.containers.internal"
+db_image: "docker.io/library/postgres:14.3-alpine"
+
+realm_deic: true
+
+realm_email_host: "smtp-host.domain"  
+realm_email_from: "email@smtp-host.domain" 
+realm_client_redirect_url: "https://ucloud.rc.dtu.dk/*" 
+realm_theme: "custom-theme"
+
+dev_realm_email_host: "smtp-host.domain"  
+dev_realm_email_from: "email@smtp-host.domain" 
+dev_realm_client_redirect_url: "https://ucloud-dev.rc.dtu.dk/*" 
+dev_realm_theme: "custom-theme"
+
+signature_logo: "https://www.dtu.dk/mail-signature-logo.png"
+signature_author: "IT Department"
+signature_function: "Research Computing"
+signature_phone: "+45 00000000"
+signature_email: "email@smtp-host.domain"
+signature_address1: "Address line 1"
+signature_address2: "Address line 2"
+signature_address3: "Address line 3"
+signature_website: "https://dtu.dk/english"
+

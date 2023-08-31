@@ -1,0 +1,43 @@
+---
+
+- name: Download graalvm
+  get_url:
+    url: "{{graal_url}}"
+    dest: /tmp/graalvm.tar.gz
+    checksum: "{{graal_checksum}}"
+    force: true
+
+- name: Create directory graalvm
+  file:
+    path: "/home/{{user}}/graalvm"
+    owner: "{{user}}"
+    state: directory
+
+- name: Unarchive archive
+  unarchive:
+    src: "/tmp/graalvm.tar.gz"
+    dest: "/home/{{user}}/graalvm"
+    remote_src: true
+    extra_opts:
+      - "--strip-components"
+      - "1"
+
+- name: Add graalvm to path env
+  lineinfile:
+    path: "/home/{{user}}/.bashrc"
+    line: "export PATH=/home/{{user}}/graalvm/bin:$PATH"
+    create: true
+
+- name: Creates cacerts password
+  command: openssl rand -hex 10
+  register: cacerts_pwd
+
+- name: Print output to file
+  copy:
+    content: "{{cacerts_pwd.stdout}}"
+    dest: /home/{{user}}/graalvm/.cacertspw
+
+- name: Changes Graal cacerts password
+  command: "keytool -storepasswd -keystore /home/{{user}}/graalvm/lib/security/cacerts -storepass changeit -new {{cacerts_pwd.stdout}}"
+
+...

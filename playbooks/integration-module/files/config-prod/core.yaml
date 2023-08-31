@@ -1,0 +1,22 @@
+providerId: sophia
+
+cors:
+  allowHosts:
+    - cloud.sdu.dk
+    - rc.dtu.dk
+
+
+ipc: 
+  directory: /home/ucloud/config-prod/run
+logs: 
+  directory: /home/ucloud/config-prod/logs
+hosts:
+    self:
+        host: ucloud.rc.dtu.dk
+        scheme: https
+        port: 443
+
+    ucloud:
+        host: cloud.sdu.dk
+        scheme: https
+        port: 443

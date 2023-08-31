@@ -1,0 +1,59 @@
+connection:
+    # Specifies the plugin type. The remaining configuration is specific to this plugin.
+    type: OpenIdConnect
+
+    # Determines for how long we should consider the connection valid. Once the time-to-live has expired, the user
+    # must reestablish the connection.
+    mappingTimeToLive:
+        days: 1
+
+    # Endpoints used in the OIDC protocol.
+    endpoints:
+        auth: https://auth.rc.dtu.dk/auth/realms/deic/protocol/openid-connect/auth
+        token: https://iam-host:8443/auth/realms/deic/protocol/openid-connect/token
+
+    # Client information used in the OIDC protocol.
+    client:
+        id: im-ucloud
+        secret: ZYrUKqgm7d3
+
+    # Extensions which will be invoked by the plugin when certain events occur.
+    extensions:
+        # Invoked when the connection has completed.
+        onConnectionComplete: /home/ucloud/im-extensions/connection-complete
+    redirectUrl: https://cloud.sdu.dk
+
+    signing: 
+     algorithm: RS256
+     key: MIIBIjANBgkqhkimPFyOlIpkvq9x+Qk7kMH1NLOnfXFlllFXbRrKw+8m11Ue/wWIP8cxtHfaGQIOHyyz7RV7TV0BlhEj3ZSlSvCOm7Q+9e7fluyEFuIX6gOYG/1E8/k+mjeO7aYVwpGiOIH3+p/67S31EDshm7E/EaobwX1WdYWsUgaAZ5ukT/6gpK8m+vDYPkB87DXa4cOiHu/FEbSWGphkLZBnDzwMCJiEKC3zHeKTTQYs9d/CZQYmfBgYJ9mcvs7ygYRukJKMmJ/1K1DSw0RaQFMTOoGtCmDT50gX87VKbwpRcwIDAQAB
+     issuer: https://auth.rc.dtu.dk/auth/realms/deic
+
+projects:
+    type: Simple
+    unixGroupNamespace: 2000
+    extensions:
+        all: /home/ucloud/im-extensions/project-extension
+
+jobs:
+    default:
+        type: Slurm
+        matches: sophia-slim
+        partition: slurm-queue-name
+        mountpoint: /mountpoint/projects
+        useFakeMemoryAllocations: false
+        terminal:
+          type: SSH
+          generateSshKeys: false
+        ssh: null
+
+files:
+    default:
+        type: Posix
+        matches: sophia-storage
+
+fileCollections:
+    default:
+        type: Posix
+        matches: sophia-storage
+        extensions:
+          additionalCollections: /home/ucloud/im-extensions/drive-locator

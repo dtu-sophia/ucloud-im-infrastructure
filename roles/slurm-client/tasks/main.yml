@@ -1,0 +1,38 @@
+---
+
+- name: Add openhpc
+  yum:
+    name: "{{openhpc_rpm}}"
+    disable_gpg_check: true
+    state: present
+
+- name: Installs openhpc client
+  yum:
+    name:
+      - slurm-ohpc-{{slurm_version}}
+      - slurm-example-configs-ohpc
+    state: present
+
+- name: Creates directory /etc/slurm
+  file:
+    path: /etc/slurm
+    state: directory
+
+- name: Uploads slurm conf file
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm/slurm.conf
+    mode: '0644'
+
+- name: Uploads munge file from localhost
+  copy:
+    src: files/munge.key
+    dest: /etc/munge/munge.key
+    mode: '0400'
+    owner: 'munge'
+    group: 'munge'
+
+- debug:
+    msg: "ADD KEY TO /etc/munge/munge.conf AND START THE SERVICE MANUALLY"
+
+...

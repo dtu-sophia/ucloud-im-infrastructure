@@ -1,0 +1,6 @@
+---
+
+- name: Install 389ds server
+  package: name=389-ds-base state=present
+
+...

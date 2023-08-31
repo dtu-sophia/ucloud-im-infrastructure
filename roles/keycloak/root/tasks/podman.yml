@@ -1,0 +1,8 @@
+---
+
+- name: Install latest Podman
+  dnf:
+    name: podman-4.4.1
+    state: present
+
+...

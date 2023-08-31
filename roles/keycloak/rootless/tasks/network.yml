@@ -1,0 +1,9 @@
+---
+
+- name: Create a podman network
+  containers.podman.podman_network:
+    name: "container-network"
+    state: present
+    recreate: true
+
+...

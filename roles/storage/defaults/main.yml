@@ -1,0 +1,21 @@
+---
+
+hosts:
+  - name: clustername-controlmachine
+    fqdn: clustername-controlmachine.domain
+    ip: 10.10.10.10
+  - name: clustername
+    fqdn: clustername.domain
+    ip: 10.10.10.20
+  - name: idp-host
+    fqdn: idp-host.domain
+    ip: 10.10.10.30
+  - name: n0001
+    fqdn: ""
+    ip: 10.10.10.40
+  - name: n0002
+    fqdn: ""
+    ip: 10.10.10.41
+storage_mount: "storage-host:/mountpoint /mountpoint nfs4 rw,relatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,local_lock=none"
+
+...

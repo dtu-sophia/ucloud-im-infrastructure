@@ -1,0 +1,7 @@
+---
+domain_component: "dc=component1,dc=component2,dc=component3,dc=component4"
+uri_389: "ldap://idp-host"
+port_389: "389"
+dsrcpw: "DM password"
+group_allowed: "login group"
+users_homedir: "/mountpoint/users"

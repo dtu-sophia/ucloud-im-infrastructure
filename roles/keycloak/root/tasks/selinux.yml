@@ -1,0 +1,8 @@
+---
+
+- name: Put SELinux in enforcing mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: enforcing
+
+...

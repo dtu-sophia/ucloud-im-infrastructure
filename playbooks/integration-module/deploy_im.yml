@@ -1,0 +1,120 @@
+---
+
+- import_playbook: ./prerequisites.yml
+- import_playbook: ./clone_extensions.yml
+
+- name: UCloud Integration Module
+  hosts: ucloud_im_prod
+  remote_user: deploy-user
+  become_user: ucloud
+  become: true
+
+  vars_files:
+
+    - vars.yml
+
+  tasks:
+
+    - name: Clone repo Ucloud
+      git:
+        repo: https://github.com/SDU-eScience/UCloud.git
+        dest: /home/ucloud/UCloud
+        version: "{{ ucloud_tag }}"
+
+    - name: Create symlink
+      file:
+        src: /home/ucloud/UCloud/provider-integration/integration-module/build/native/nativeCompile/ucloud-integration-module
+        dest: /home/ucloud/ucloud
+        state: link
+        force: true
+
+    - name: Upload extension files
+      copy:
+        src: integration-module-extensions/
+        dest: /home/ucloud/im-extensions/
+        owner: ucloud
+        group: ucloud
+
+    - name: Create directory structure
+      file:
+        path: "{{item.path}}"
+        mode: "{{item.mode}}"
+        owner: "{{item.owner}}"
+        group: "{{item.group}}"
+        recurse: true
+        state: directory
+      loop:
+        - {path: "/home/ucloud/im-extensions/", mode: "775", owner: "ucloud", group: "ucloud"}
+        - {path: "/home/ucloud/im-extensions/logs", mode: "777", owner: "ucloud", group: "ucloud"}
+        - {path: "/home/ucloud/config-{{env}}/", mode: "775", owner: "ucloud", group: "ucloud"}
+        - {path: "/home/ucloud/config-{{env}}/pgsql", mode: "777", owner: "ucloud", group: "ucloud"}
+        - {path: "/home/ucloud/config-{{env}}/run/envoy", mode: "755", owner: "ucloud", group: "ucloud"}
+        - {path: "/home/ucloud/config-{{env}}/logs", mode: "777", owner: "ucloud", group: "ucloud"}
+
+    - name: Upload config files
+      copy:
+        src: files/config-{{env}}/
+        dest: /home/ucloud/config-{{env}}/
+        owner: ucloud
+        group: ucloud
+        mode: 0775
+
+    - name: The server.yaml config must only be readable by the ucloud user
+      file:
+        path: /home/ucloud/config-{{env}}/server.yaml
+        owner: ucloud
+        group: ucloud
+        mode: '0600'
+
+    - name: Create UCloud etc directory that must be readable for all users
+      file:
+        path: /etc/ucloud
+        mode: 0755
+        owner: ucloud
+        group: ucloud
+        state: directory
+      become_user: root
+      become: true
+
+    - name: Add alternate UCloud config path
+      lineinfile:
+        path: /etc/ucloud/configdir.txt
+        line: /home/ucloud/config-{{env}}
+        create: true
+
+    - name: Get cacerts pwd
+      command: "cat /home/ucloud/graalvm/.cacertspw"
+      register: cacertspw
+
+    - name: Add keycloak cert to graalvm truststore
+      command: "keytool -import -v -noprompt -trustcacerts -alias keycloak_internal -file /home/ucloud/config-{{env}}/keycloak.pem -keystore /home/ucloud/graalvm/lib/security/cacerts -storepass {{cacertspw.stdout}} "
+
+    - name: Build project
+      shell: sudo -iu ucloud /bin/bash -c "source .bashrc ; cd /home/ucloud/UCloud/provider-integration/integration-module/ ; ./gradlew -q -Dorg.gradle.jvmargs=-Xmx3G -Djavax.net.ssl.trustStore=/home/ucloud/graalvm/lib/security/cacerts nativeCompile ;"
+
+    - name: Update .bashrc for systemd user scope requirements
+      lineinfile:
+        path: "/home/ucloud/.bashrc"
+        mode: "0644"
+        owner: "ucloud"
+        group: "ucloud"
+        line: |
+          export XDG_RUNTIME_DIR="/run/user/$UID"
+          export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+
+    - name: Ensure systemd user directory exists
+      file:
+        path: /home/ucloud/.config/systemd/user/
+        state: directory
+        recurse: true
+
+    - name: Upload systemd file
+      copy:
+        src: files/ucloud.service
+        dest: /home/ucloud/.config/systemd/user/ucloud.service
+        mode: '0664'
+        owner: "ucloud"
+        group: "ucloud"
+
+
+...

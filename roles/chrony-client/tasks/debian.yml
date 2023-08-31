@@ -1,0 +1,14 @@
+---
+
+- name: Package | Ensure chrony installed (Debian).
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages: "{{ chrony_packages }}"
+
+- name: Timezone |  set timezone to Europe/Copenhagen
+  timezone:
+    name: Europe/Copenhagen
+
+...
